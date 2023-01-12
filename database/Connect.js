@@ -1,0 +1,8 @@
+const mongoose = require('mongoose');
+
+mongoose.connect(process.env.DB).then(() =>
+    console.log('Suceessfully connected to database')).catch((error) =>
+        console.log(error));
+         console.log('Not connected to database');
+
+mongoose.promise = global.promise;
