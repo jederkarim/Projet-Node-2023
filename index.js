@@ -16,11 +16,24 @@ app.use((err,req,res,next)=>{
     res.status(422).send({error:err.message})
 });
 
-const userRoute = require('./routes/userRoute');
+const companyRoute = require('./routes/companyRoute');
 const authRoute = require('./routes/authentificat.Route')
+const eventRoute = require('./routes/eventRoute')
+const tagsRoute = require('./routes/tagsRoute')
+const reservationRoute = require('./routes/reservationRoute')
 
-app.use('/api',userRoute);
+
+
+
+
+app.use('/api',companyRoute);
 app.use('/api',authRoute );
+app.use('/api',eventRoute );
+app.use('/api',tagsRoute);
+app.use('/api',reservationRoute );
+
+
+
 
 
 
