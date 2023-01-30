@@ -13,7 +13,6 @@ const CompanySchema = new Schema({
         type: String,
         required: [true, 'Description field is required']
     },
-
     email: {
         type: String,
         required: [true, 'Email field is required']
