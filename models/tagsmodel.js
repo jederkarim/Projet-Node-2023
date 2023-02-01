@@ -3,15 +3,17 @@ const Schema = mongoose.Schema;
 
 
 const TagsSchema = new Schema({
-   name:{type:String,
+    name: {
+        type: String,
     },
-    description:{type:String,
-       },
-      
-},{
+    description: {
+        type: String,
+    },
+
+}, {
     timestamps: true,
     versionKey: false
 });
 
-const Tags = mongoose.model('tag',TagsSchema,'tag');
+const Tags = mongoose.model('tag', TagsSchema, 'tag');
 module.exports = Tags;

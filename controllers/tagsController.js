@@ -3,11 +3,11 @@ const Tags = require('../Models/tagsmodel')
 
 exports.addTag = async (req, res, next) => {
     try {
-        const tag = new Tags({
-            name: req.body.name,
-            description: req.body.description,   
-        })
-        await tag.save()
+        // const tag = new Tags({
+        //     name: req.body.name,
+        //     description: req.body.description,   
+        // })
+        await Tags.create(req.body)   
         res.send({message: "Tag created successfully."})
     } catch (error) {
         next();
