@@ -86,7 +86,7 @@ exports.forgotPassword = async (req, res) => {
         });   
         const templatePath = path.resolve('./src/templates', 'resetPassword.html');
         const registerTemplate = fs.readFileSync(templatePath, { encoding: 'utf-8' })
-        const render = ejs.render(registerTemplate, { name: company.companyName, link: `${process.env.PORT}/#/reset-password/${createdToken.token}` })
+        const render = ejs.render(registerTemplate, { name: company.companyName, link: `${process.env.PORT}/reset-password/${createdToken.token}` })
         const info = await transporter.sendMail({
             from: process.env.USER, // sender address
             to: `${company.email}`,
@@ -98,83 +98,29 @@ exports.forgotPassword = async (req, res) => {
     }
 }
 
-// exports.resetPassword = async (req, res) => {
-//     let passwordResetToken = await Token.findOne({ token: req.body.token });
-//     if (!passwordResetToken) {
-//         res.status(400).json({ message: "Invalid or expired password reset link" });
-//     } else {
-//         const currentDate = new Date();
-//         const expireTime = new Date(passwordResetToken.createdAt)
-//         const diff = currentDate - expireTime
-//         const seconds = Math.floor(diff / 1000);
-//         if (seconds < 900) {
-//             const bcryptSalt = process.env.BCRYPT;
-//             const hash = await bcrypt.hash(req.body.password, Number(bcryptSalt));
-//             await User.updateOne(
-//                 { _id: passwordResetToken.userId },
-//                 { $set: { password: hash } },
-//                 { new: true }
-//             );
-//             await passwordResetToken.deleteOne();
-//             res.status(200).json({ message: 'Successfully reseted' })
-//         } else {
-//             await passwordResetToken.deleteOne();
-//             res.status(401).json({ message: 'Invalid or expired password reset link' })
-//         }
-//     }
-// }
+exports.resetPassword = async (req, res) => {
+    let passwordResetToken = await Token.findOne({ token: req.body.token });
+    if (!passwordResetToken) {
+        res.status(400).json({ message: "Invalid or expired password reset link" });
+    } else {
+        const currentDate = new Date();
+        const expireTime = new Date(passwordResetToken.createdAt)
+        const diff = currentDate - expireTime
+        const seconds = Math.floor(diff / 1000);
+        if (seconds < 900) {
+            const bcryptSalt = process.env.BCRYPT;
+            const hash = await bcrypt.hash(req.body.password, Number(bcryptSalt));
+            await User.updateOne(
+                { _id: passwordResetToken.userId },
+                { $set: { password: hash } },
+                { new: true }
+            );
+            await passwordResetToken.deleteOne();
+            res.status(200).json({ message: 'Successfully reseted' })
+        } else {
+            await passwordResetToken.deleteOne();
+            res.status(401).json({ message: 'Invalid or expired password reset link' })
+        }
+    }
+}
 
-
-// exports.forgotPassword = async (req, res) => {
-//   const user = await User.findOne({ email: req.body.email });
-
-//   if (!user) {
-//     res.status(400).json({ message: "User does not exist" });
-//   }
-//   else {
-
-//     const token = await Token.findOne({ userId: user._id });
-//     if (token) {
-//       await token.deleteOne()
-//     };
-//     const resetToken = randomString.generate(30)
-//     const createdToken = await new Token({
-//       userId: user._id,
-//       token: resetToken,
-//     }).save();
-//     //send mail
-//     let transporter = nodemailer.createTransport({
-//       service: process.env.SERVICE,
-//       auth: {
-//         user: process.env.USER,
-//         pass: process.env.PASS,
-//       },
-//     });
-//     let info = await transporter.sendMail({
-//       from: process.env.userEmail,
-//       to: `${user.email}`,
-//       subject: "Password reset",
-//       html: render
-//     });
-
-//     res.json({ message: 'Check your mailbox' })
-//   }
-// }
-
-
-// // try {
-// //   const schema = Joi.object({ email: Joi.string().email().required() });
-// //   const { error } = schema.validate(req.body);
-// //   if (error) return res.status(400).send(error.details[0].message);
-
-// //   const user = await User.findOne({ email: req.body.email });
-// //   if (!user)
-// //       return res.status(400).send("user with given email doesn't exist");
-
-// //   let token = await Token.findOne({ userId: user._id });
-// //   if (!token) {
-// //       token = await new Token({
-// //           userId: user._id,
-// //           token: crypto.randomBytes(32).toString("hex"),
-// //       }).save();
-// //   }
